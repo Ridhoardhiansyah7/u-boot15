@@ -1,0 +1,64 @@
+name: Build Android U-Boot
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: 'Arsitektur (arm, arm64, x86)'
+        required: true
+        default: 'arm64'
+        type: choice
+        options:
+          - arm
+          - arm64
+          - x86
+          - bsp
+      board_name:
+        description: 'Board Name or Defconfig (eg: sp9863a_1h10_defconfig)'
+        required: false
+        type: string
+      device_tree:
+        description: 'Device Tree (opsional)'
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Environment & Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses-dev bison flex bc git wget
+
+      - name: Setup Toolchains (Opsional / Contoh Prebuilts)
+        # Jika prebuilts toolchain ada di repo atau perlu di-clone terpisah, letakkan di sini.
+        # Contoh membuat direktori prebuilts agar path di make.sh tidak error:
+        run: |
+          mkdir -p ../prebuilts/gcc/linaro-x86/aarch64/
+          # Tambahkan perintah clone toolchain eksternal di sini jika belum tersedia di repo utama.
+
+      - name: Make Executable
+        run: chmod +x make.sh
+
+      - name: Run Build Script
+        run: |
+          # Menyesuaikan eksekusi berdasarkan input dari workflow_dispatch
+          if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
+            bash ./make.sh bsp
+          else
+            bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
+          fi
+
+      - name: Archive Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: uboot-output-${{ github.event.inputs.board_name }}
+          path: |
+            out/
+            *.bin
+            *.img
