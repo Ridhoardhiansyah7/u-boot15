@@ -93,9 +93,9 @@ jobs:
           if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
             bash ./make.sh bsp
           else
-            export KCFLAGS="-std=gnu99 -w"
+            export KCFLAGS="-std=gnu99 -w -I$(pwd)/arch/arm/include/asm/arch-sharkl3 -I$(pwd)/arch/arm/include"
             export HOSTCFLAGS="-std=gnu99 -w"
-            export EXTRA_CFLAGS="-std=gnu99 -w"
+            export EXTRA_CFLAGS="-std=gnu99 -w -I$(pwd)/arch/arm/include/asm/arch-sharkl3 -I$(pwd)/arch/arm/include"
             bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
           fi
         shell: bash
