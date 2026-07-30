@@ -90,6 +90,8 @@ jobs:
 
       - name: Build U-Boot
         run: |
+          echo "find board.h file..."
+          find . -name "board.h"
           if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
             bash ./make.sh bsp
           else
