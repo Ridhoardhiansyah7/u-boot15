@@ -14,7 +14,7 @@ on:
           - x86
           - bsp
       board_name:
-        description: 'Board Name or Defconfig (eg: sp9863a_1h10_defconfig)'
+        description: 'Board Name or Defconfig (eg: sp9863a_1h10)'
         required: false
         type: string
       device_tree:
@@ -33,21 +33,20 @@ jobs:
       - name: Set Up Environment & Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libncurses-dev bison flex bc git wget
+          sudo apt-get install -y build-essential libncurses-dev bison flex bc git wget gcc-aarch64-linux-gnu
 
-      - name: Setup Toolchains (Opsional / Contoh Prebuilts)
-        # Jika prebuilts toolchain ada di repo atau perlu di-clone terpisah, letakkan di sini.
-        # Contoh membuat direktori prebuilts agar path di make.sh tidak error:
+      - name: Setup Linaro Toolchain
         run: |
           mkdir -p ../prebuilts/gcc/linaro-x86/aarch64/
-          # Tambahkan perintah clone toolchain eksternal di sini jika belum tersedia di repo utama.
+          cd ../prebuilts/gcc/linaro-x86/aarch64/
+          wget https://releases.linaro.org/components/toolchain/binaries/4.8-2015.06/aarch64-linux-gnu/gcc-linaro-4.8-2015.06-x86_64_aarch64-linux-gnu.tar.xz
+          tar -xf gcc-linaro-4.8-2015.06-x86_64_aarch64-linux-gnu.tar.xz
 
       - name: Make Executable
         run: chmod +x make.sh
 
       - name: Run Build Script
         run: |
-          # Menyesuaikan eksekusi berdasarkan input dari workflow_dispatch
           if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
             bash ./make.sh bsp
           else
