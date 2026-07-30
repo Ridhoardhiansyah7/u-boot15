@@ -46,6 +46,21 @@ jobs:
           ln -s /usr/bin/aarch64-linux-gnu-objcopy-9 "$TARGET_DIR/aarch64-linux-gnu-objcopy"
           ln -s /usr/bin/aarch64-linux-gnu-cpp-9 "$TARGET_DIR/aarch64-linux-gnu-cpp"
 
+      - name: Create GCC System Symlinks
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/bin
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+          
+          # Buat symlink dari compiler versi 9 ke nama standar tanpa akhiran -9
+          ln -s /usr/bin/aarch64-linux-gnu-gcc-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-gcc
+          ln -s /usr/bin/aarch64-linux-gnu-g++-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-g++
+          ln -s /usr/bin/aarch64-linux-gnu-cpp-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-cpp
+          ln -s /usr/bin/aarch64-linux-gnu-ld-9  $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-ld
+          ln -s /usr/bin/aarch64-linux-gnu-as-9  $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-as
+          ln -s /usr/bin/aarch64-linux-gnu-ar-9  $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-ar
+          ln -s /usr/bin/aarch64-linux-gnu-objcopy-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-objcopy
+          ln -s /usr/bin/aarch64-linux-gnu-objdump-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-objdump
+
       - name: Make Executable
         run: chmod +x make.sh
 
