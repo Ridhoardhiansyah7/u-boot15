@@ -92,6 +92,10 @@ jobs:
         run: |
           mkdir -p include/soc/sprd
           touch include/soc/sprd/board.h
+
+          mkdir -p kernel/kernel4.14/include/soc/sprd
+          cp include/soc/sprd/board.h kernel/kernel4.14/include/soc/sprd/board.h
+          
           if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
             bash ./make.sh bsp
           else
