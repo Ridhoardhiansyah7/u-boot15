@@ -35,12 +35,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libncurses-dev bison flex bc git wget gcc-aarch64-linux-gnu
 
-      - name: Setup Linaro Toolchain
+      - name: Setup Toolchain Path Symlink
         run: |
-          mkdir -p ../prebuilts/gcc/linaro-x86/aarch64/
-          cd ../prebuilts/gcc/linaro-x86/aarch64/
-          wget https://releases.linaro.org/components/toolchain/binaries/4.8-2015.06/aarch64-linux-gnu/gcc-linaro-4.8-2015.06-x86_64_aarch64-linux-gnu.tar.xz
-          tar -xf gcc-linaro-4.8-2015.06-x86_64_aarch64-linux-gnu.tar.xz
+          TARGET_DIR="../prebuilts/gcc/linaro-x86/aarch64/gcc-linaro-4.8-2015.06-x86_64_aarch64-linux-gnu/bin"
+          mkdir -p "$TARGET_DIR"
+          
+          ln -s $(which aarch64-linux-gnu-gcc) "$TARGET_DIR/aarch64-linux-gnu-gcc"
+          ln -s $(which aarch64-linux-gnu-ld) "$TARGET_DIR/aarch64-linux-gnu-ld"
+          ln -s $(which aarch64-linux-gnu-as) "$TARGET_DIR/aarch64-linux-gnu-as"
+          ln -s $(which aarch64-linux-gnu-objcopy) "$TARGET_DIR/aarch64-linux-gnu-objcopy"
+          ln -s $(which aarch64-linux-gnu-cpp) "$TARGET_DIR/aarch64-linux-gnu-cpp"
 
       - name: Make Executable
         run: chmod +x make.sh
