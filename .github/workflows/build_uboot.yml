@@ -76,6 +76,11 @@ jobs:
             echo "Successfully created compiler-gcc9.h fallback!"
           fi
 
+      - name: Set C99 Standard Flag for GCC 9
+        run: |
+          echo "KBUILD_CFLAGS=-std=gnu99" >> $GITHUB_ENV
+          echo "HOSTCFLAGS=-std=gnu99" >> $GITHUB_ENV
+
       - name: Make Executable
         run: chmod +x make.sh
 
