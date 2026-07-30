@@ -61,6 +61,21 @@ jobs:
           ln -s /usr/bin/aarch64-linux-gnu-objcopy-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-objcopy
           ln -s /usr/bin/aarch64-linux-gnu-objdump-9 $GITHUB_WORKSPACE/bin/aarch64-linux-gnu-objdump
 
+      - name: Fix GCC 9 Header for U-Boot
+        run: |
+          cd include/linux
+          
+          if [ ! -f compiler-gcc9.h ]; then
+            if [ -f compiler-gcc5.h ]; then
+              cp compiler-gcc5.h compiler-gcc9.h
+            elif [ -f compiler-gcc6.h ]; then
+              cp compiler-gcc6.h compiler-gcc9.h
+            elif [ -f compiler-gcc4.h ]; then
+              cp compiler-gcc4.h compiler-gcc9.h
+            fi
+            echo "Successfully created compiler-gcc9.h fallback!"
+          fi
+
       - name: Make Executable
         run: chmod +x make.sh
 
