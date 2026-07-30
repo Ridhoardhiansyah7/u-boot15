@@ -747,7 +747,7 @@ int common_write_backstage(char *part_name, uint32_t size, uint64_t offset, char
 	/*invoker must guarantee that the size and offset aligned to the block size*/
 	if (0 != size % local_part_info.blksz || 0 != offset % local_part_info.blksz) {
 		/*errorf("input size or offset not aligned, size(0x%x), offset(0x%x)\n", size, offset);*/
-		errorf("input size or offset not aligned, size(0x%llx), offset(0x%llx)\n", size, offset);
+		errorf("input size or offset not aligned, size(0x%x), offset(0x%x)\n", size, offset);
 		ret = -1;
 	}
 
