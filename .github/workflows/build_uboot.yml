@@ -81,6 +81,10 @@ jobs:
           echo "KBUILD_CFLAGS=-std=gnu99" >> $GITHUB_ENV
           echo "HOSTCFLAGS=-std=gnu99" >> $GITHUB_ENV
 
+      - name: Convert All C++ Comments to Standard C Comments
+        run: |
+          find include/configs/ -type f -name "*.h" -exec sed -i 's|//\(.*\)|/\* \1 \*/|g' {} +
+
       - name: Make Executable
         run: chmod +x make.sh
 
