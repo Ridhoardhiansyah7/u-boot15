@@ -33,18 +33,18 @@ jobs:
       - name: Set Up Environment & Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libncurses-dev bison flex bc git wget gcc-aarch64-linux-gnu
+          sudo apt-get install -y build-essential libncurses-dev bison flex bc git wget gcc-9-aarch64-linux-gnu g++-9-aarch64-linux-gnu
 
       - name: Setup Toolchain Path Symlink
         run: |
           TARGET_DIR="../prebuilts/gcc/linaro-x86/aarch64/gcc-linaro-4.8-2015.06-x86_64_aarch64-linux-gnu/bin"
           mkdir -p "$TARGET_DIR"
           
-          ln -s $(which aarch64-linux-gnu-gcc) "$TARGET_DIR/aarch64-linux-gnu-gcc"
-          ln -s $(which aarch64-linux-gnu-ld) "$TARGET_DIR/aarch64-linux-gnu-ld"
-          ln -s $(which aarch64-linux-gnu-as) "$TARGET_DIR/aarch64-linux-gnu-as"
-          ln -s $(which aarch64-linux-gnu-objcopy) "$TARGET_DIR/aarch64-linux-gnu-objcopy"
-          ln -s $(which aarch64-linux-gnu-cpp) "$TARGET_DIR/aarch64-linux-gnu-cpp"
+          ln -s /usr/bin/aarch64-linux-gnu-gcc-9 "$TARGET_DIR/aarch64-linux-gnu-gcc"
+          ln -s /usr/bin/aarch64-linux-gnu-ld-9 "$TARGET_DIR/aarch64-linux-gnu-ld"
+          ln -s /usr/bin/aarch64-linux-gnu-as-9 "$TARGET_DIR/aarch64-linux-gnu-as"
+          ln -s /usr/bin/aarch64-linux-gnu-objcopy-9 "$TARGET_DIR/aarch64-linux-gnu-objcopy"
+          ln -s /usr/bin/aarch64-linux-gnu-cpp-9 "$TARGET_DIR/aarch64-linux-gnu-cpp"
 
       - name: Make Executable
         run: chmod +x make.sh
