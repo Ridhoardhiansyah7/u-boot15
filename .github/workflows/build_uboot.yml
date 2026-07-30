@@ -93,7 +93,7 @@ jobs:
           if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
             bash ./make.sh bsp
           else
-            export KCFLAGS="-std=gnu99"
+            export KCFLAGS="-std=gnu99 -Wno-error"
             export HOSTCFLAGS="-std=gnu99"
             export EXTRA_CFLAGS="-std=gnu99"
             bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
