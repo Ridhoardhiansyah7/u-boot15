@@ -3,6 +3,11 @@ name: Build Android U-Boot
 on:
   workflow_dispatch:
     inputs:
+      using_BspUBoot_to_build_bootloader:
+        description: 'Is using BspUBoot to build this bootloader or using default make script'
+        required: true
+        default: true
+        type: boolean
       arch:
         description: 'Arch (arm, arm64, x86)'
         required: true
@@ -12,7 +17,6 @@ on:
           - arm
           - arm64
           - x86
-          - bsp
       build_variant:
         description: 'Build variant (user, userdebug, eng)'
         required: true
@@ -135,8 +139,8 @@ jobs:
             export CONFIG_PCTOOL_CHECK_MULTI_FIXNV=false
             export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
             export BSP_CALIMODE_USE_BOOTIMG=true
-          
-          if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
+
+          if [ "${{ github.event.inputs.using_BspUBoot_to_build_bootloader }}]; then
             bash ./make.sh bsp
           else
             bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
