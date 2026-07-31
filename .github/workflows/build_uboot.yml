@@ -140,16 +140,19 @@ jobs:
 
             # Cali
             export BSP_CALIMODE_USE_BOOTIMG=true
+
+            # Kernel cmdline
+            export CONFIG_BOARD_KERNEL_CMDLINE=false
+
+            # PcTool
+            export CONFIG_PCTOOL_CHECK_MULTI_FIXNV=false
+            export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
             
             #export BSP_PKCS1_PSS_FLAG=true
             #export BSP_PROJECT_SEC_CM4_FLAG=true
             #export CONFIG_CHIP_UID=false
             #export BSP_CONFIG_TEE_FIREWALL=false
             #export BSP_BOARD_ATF_CONFIG=false
-            #export CONFIG_BOARD_KERNEL_CMDLINE=false
-            #export CONFIG_PCTOOL_CHECK_MULTI_FIXNV=false
-            #export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
-
 
           if [ "${{ github.event.inputs.using_BspUBoot_to_build_bootloader }}" = "true" ]; then
             bash ./make.sh bsp
