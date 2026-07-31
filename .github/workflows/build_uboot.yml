@@ -136,7 +136,8 @@ jobs:
             export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
             export BSP_CALIMODE_USE_BOOTIMG=true
             
-            bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
+            #bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
+            bash ./make.sh ${{ github.event.inputs.arch }}
           fi
         shell: bash
 
