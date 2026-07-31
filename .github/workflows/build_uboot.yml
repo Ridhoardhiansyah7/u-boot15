@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       using_BspUBoot_to_build_bootloader:
-        description: 'Is using BspUBoot to build this bootloader or using default make script'
+        description: 'Is using BspUBoot to build uboot or using default make.sh'
         required: true
         default: true
         type: boolean
       arch:
-        description: 'Arch (arm, arm64, x86)'
+        description: 'Target Build Arch (arm, arm64, x86)'
         required: true
         default: 'arm64'
         type: choice
@@ -18,7 +18,7 @@ on:
           - arm64
           - x86
       build_variant:
-        description: 'Build variant (user, userdebug, eng)'
+        description: 'Target Build variant (user, userdebug, eng)'
         required: true
         default: 'userdebug'
         type: choice
@@ -27,12 +27,12 @@ on:
           - userdebug
           - eng
       board_name:
-        description: 'Board Name or Defconfig (eg: sp9863a_1h10)'
+        description: 'Board Name or Defconfig (eg: sp9863a_1h10 . note without _defconfig)'
         required: true
         default: 'sp9863a_1h10'
         type: string
       device_tree:
-        description: 'Device Tree (eg: sp9863a_1h10)'
+        description: 'Device Tree (eg: sp9863a_1h10 . note without ext like .dts/.dtsi)'
         default: 'sp9863a_1h10'
         required: true
         type: string
@@ -105,55 +105,59 @@ jobs:
 
       - name: Build U-Boot
         run: |
+
+          # Dummy file
           mkdir -p include/soc/sprd
           touch include/soc/sprd/board.h
-
           mkdir -p kernel/kernel4.14/include/soc/sprd
           cp include/soc/sprd/board.h kernel/kernel4.14/include/soc/sprd/board.h
 
-            # Build flags
-            export KCFLAGS="-std=gnu99 -w -I$(pwd)/include"
-            export HOSTCFLAGS="-std=gnu99 -w"
-            export EXTRA_CFLAGS="-std=gnu99 -w -I$(pwd)/include"
+          # Build flags
+          export KCFLAGS="-std=gnu99 -w -I$(pwd)/include"
+          export HOSTCFLAGS="-std=gnu99 -w"
+          export EXTRA_CFLAGS="-std=gnu99 -w -I$(pwd)/include"
 
-            export BSP_UBOOT_OUT=$(pwd)/out
-            export BSP_UBOOT_DIST=$(pwd)/out
-            export BSP_UBOOT_DEFCONFIG=${{ github.event.inputs.board_name }}
-            export BSP_UBOOT_TARGET_DTB=${{ github.event.inputs.device_tree }}
-            export BSP_UBOOT_TOOLCHAIN=aarch64-linux-gnu-
+          # Build path,target, dtb & toolchain
+          export BSP_UBOOT_OUT=$(pwd)/out
+          export BSP_UBOOT_DIST=$(pwd)/out
+          export BSP_UBOOT_DEFCONFIG=${{ github.event.inputs.board_name }}
+          export BSP_UBOOT_TARGET_DTB=${{ github.event.inputs.device_tree }}
+          export BSP_UBOOT_TOOLCHAIN=aarch64-linux-gnu-
 
-            # Sharl3 config
-            # General
-            export BSP_BOARD_ARCH=${{ github.event.inputs.arch }}
-            export TARGET_BUILD_VARIANT=${{ github.event.inputs.build_variant }}
-            export PLATFORM_VERSION=11
+          # Sharl3 config
+          # General
+          export BSP_BOARD_ARCH=${{ github.event.inputs.arch }}
+          export TARGET_BUILD_VARIANT=${{ github.event.inputs.build_variant }}
+          export PLATFORM_VERSION=11
 
-            # A/B
-            export BSP_PRODUCT_USE_DYNAMIC_PARTITIONS=true
+          # A/B & V-A/B
+          export BSP_PRODUCT_USE_DYNAMIC_PARTITIONS=true
 
-            # VerifiedBoot & SecureBoot
-            export BSP_PRODUCT_VBOOT=V2
-            export PRODUCT_DMVERITY_DISABLE=false
-            export BSP_PRODUCT_SECURE_BOOT=SPRD
-            export BSP_BOARD_TEE_CONFIG=trusty
-            export BSP_BOARD_TEECFG_CUSTOM=true
+          # VerifiedBoot & SecureBoot
+          export BSP_PRODUCT_VBOOT=V2
+          export PRODUCT_DMVERITY_DISABLE=false
+          export BSP_PRODUCT_SECURE_BOOT=SPRD
+          export BSP_BOARD_TEE_CONFIG=trusty
+          export BSP_BOARD_TEECFG_CUSTOM=true
 
-            # Cali
-            export BSP_CALIMODE_USE_BOOTIMG=true
+          # Cali
+          export BSP_CALIMODE_USE_BOOTIMG=true
 
-            # Kernel cmdline
-            export CONFIG_BOARD_KERNEL_CMDLINE=false
+          # Kernel cmdline
+          export CONFIG_BOARD_KERNEL_CMDLINE=false
 
-            # PcTool
-            export CONFIG_PCTOOL_CHECK_MULTI_FIXNV=false
-            export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
-            
-            #export BSP_PKCS1_PSS_FLAG=true
-            #export BSP_PROJECT_SEC_CM4_FLAG=true
-            #export CONFIG_CHIP_UID=false
-            #export BSP_CONFIG_TEE_FIREWALL=false
-            #export BSP_BOARD_ATF_CONFIG=false
+          # PcTool
+          export CONFIG_PCTOOL_CHECK_MULTI_FIXNV=false
+          export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
 
+          # Others
+          #export BSP_PKCS1_PSS_FLAG=true
+          #export BSP_PROJECT_SEC_CM4_FLAG=true
+          #export CONFIG_CHIP_UID=false
+          #export BSP_CONFIG_TEE_FIREWALL=false
+          #export BSP_BOARD_ATF_CONFIG=false
+
+          # start build
           if [ "${{ github.event.inputs.using_BspUBoot_to_build_bootloader }}" = "true" ]; then
             bash ./make.sh bsp
           else
@@ -162,11 +166,17 @@ jobs:
           
         shell: bash
 
+      - name: Filter Root Files from Out Directory
+        run: |
+          mkdir -p out_flat
+          find out/ -maxdepth 1 -type f -not -name "Makefile" -exec cp {} out_flat/ \;
+
       - name: Archive Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: uboot-output-${{ github.event.inputs.board_name }}
           path: |
-            out/
+            out_flat/*
             *.bin
             *.img
+
