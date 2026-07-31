@@ -117,6 +117,7 @@ jobs:
             export EXTRA_CFLAGS="-std=gnu99 -w -I$(pwd)/include"
 
             export BSP_UBOOT_OUT=$(pwd)/out
+            export BSP_UBOOT_DIST=$(pwd)/out
             export BSP_UBOOT_DEFCONFIG=${{ github.event.inputs.board_name }}
             export BSP_UBOOT_TARGET_DTB=${{ github.event.inputs.device_tree }}
             export BSP_UBOOT_TOOLCHAIN=aarch64-linux-gnu-
