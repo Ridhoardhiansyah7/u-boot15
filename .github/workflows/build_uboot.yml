@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       arch:
-        description: 'Arsitektur (arm, arm64, x86)'
+        description: 'Arch (arm, arm64, x86)'
         required: true
         default: 'arm64'
         type: choice
@@ -13,12 +13,23 @@ on:
           - arm64
           - x86
           - bsp
+      build_variant:
+        description: 'Build variant (user, userdebug, eng)'
+        required: true
+        default: 'userdebug'
+        type: choice
+        options:
+          - user
+          - userdebug
+          - eng
       board_name:
         description: 'Board Name or Defconfig (eg: sp9863a_1h10)'
         required: false
+        default: 'sp9863a_1h10'
         type: string
       device_tree:
-        description: 'Device Tree (opsional)'
+        description: 'Device Tree (eg: sp9863a_1h10)'
+        default: 'sp9863a_1h10'
         required: false
         type: string
 
@@ -99,9 +110,32 @@ jobs:
           if [ "${{ github.event.inputs.arch }}" = "bsp" ]; then
             bash ./make.sh bsp
           else
+
+            # Build flags
             export KCFLAGS="-std=gnu99 -w -I$(pwd)/include"
             export HOSTCFLAGS="-std=gnu99 -w"
             export EXTRA_CFLAGS="-std=gnu99 -w -I$(pwd)/include"
+
+            # Sharl3 config
+            export BSP_BOARD_ARCH=${{ github.event.inputs.arch }}
+            export TARGET_BUILD_VARIANT=${{ github.event.inputs.build_variant }}
+            export BSP_PRODUCT_SECURE_BOOT=SPRD
+            export BSP_PRODUCT_USE_DYNAMIC_PARTITIONS=true
+            export BSP_PKCS1_PSS_FLAG=true
+            export BSP_PROJECT_SEC_CM4_FLAG=true
+            export BSP_PRODUCT_VBOOT=V2
+            export PLATFORM_VERSION=11
+            export PRODUCT_DMVERITY_DISABLE=false
+            export BSP_BOARD_TEE_CONFIG=trusty
+            export BSP_BOARD_TEECFG_CUSTOM=true
+            export CONFIG_CHIP_UID=false
+            export BSP_CONFIG_TEE_FIREWALL=false
+            export BSP_BOARD_ATF_CONFIG=false
+            export CONFIG_BOARD_KERNEL_CMDLINE=false
+            export CONFIG_PCTOOL_CHECK_MULTI_FIXNV=false
+            export CONFIG_PCTOOL_CHECK_WRITE_PROTECT=false
+            export BSP_CALIMODE_USE_BOOTIMG=true
+            
             bash ./make.sh ${{ github.event.inputs.arch }} ${{ github.event.inputs.board_name }} ${{ github.event.inputs.device_tree }}
           fi
         shell: bash
