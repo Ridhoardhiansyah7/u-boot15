@@ -14,7 +14,7 @@ endif
 endif
 
 ifeq ($(BSP_BOARD_ARCH) , arm64)
-SRCARCH := arm64
+SRCARCH := arm
 else ifeq ($(BSP_BOARD_ARCH), arm)
 SRCARCH := arm
 else ifeq ($(BSP_BOARD_ARCH), x86)
