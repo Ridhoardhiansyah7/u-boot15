@@ -130,7 +130,7 @@ jobs:
             export PLATFORM_VERSION=11
 
             # A/B
-            #export BSP_PRODUCT_USE_DYNAMIC_PARTITIONS=true
+            export BSP_PRODUCT_USE_DYNAMIC_PARTITIONS=true
 
             # VerifiedBoot
             export BSP_PRODUCT_VBOOT=V2
