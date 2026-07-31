@@ -119,6 +119,7 @@ jobs:
             export BSP_UBOOT_OUT=$(pwd)/out
             export BSP_UBOOT_DEFCONFIG=${{ github.event.inputs.board_name }}
             export BSP_UBOOT_TARGET_DTB=${{ github.event.inputs.device_tree }}
+            export BSP_UBOOT_TOOLCHAIN=aarch64-linux-gnu-
 
             # Sharl3 config
             export BSP_BOARD_ARCH=${{ github.event.inputs.arch }}
