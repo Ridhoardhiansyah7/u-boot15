@@ -14,8 +14,6 @@
 
 #define CONFIG_MEM_LAYOUT_DECOUPLING
 
-#define CONFIG_SP_DDR_BOOT
-
 /*sharklj1 fpga/zebu debug*/
 #define BOOTIMG_ADR	0x8D000000
 
