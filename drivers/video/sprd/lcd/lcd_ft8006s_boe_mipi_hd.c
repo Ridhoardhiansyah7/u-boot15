@@ -230,8 +230,10 @@ static int ft8006s_boe_mipi_hd_power(int on)
 
 		sprd_gpio_request(NULL, CONFIG_LCM_GPIO_RSTN);
 		sprd_gpio_direction_output(NULL, CONFIG_LCM_GPIO_RSTN, 0);
+#ifdef CONFIG_CTP_GPIO_RSTN
 		sprd_gpio_request(NULL, CONFIG_CTP_GPIO_RSTN);
 		sprd_gpio_direction_output(NULL, CONFIG_CTP_GPIO_RSTN, 0);
+#endif
 
 #ifdef CONFIG_LCM_GPIO_AVDDEN
 		sprd_gpio_request(NULL, CONFIG_LCM_GPIO_AVDDEN);
@@ -243,7 +245,9 @@ static int ft8006s_boe_mipi_hd_power(int on)
 		sprd_gpio_direction_output(NULL, CONFIG_LCM_GPIO_AVEEEN, 1);
 		mdelay(3);
 #endif
+#ifdef CONFIG_CTP_GPIO_RSTN
 		sprd_gpio_direction_output(NULL, CONFIG_CTP_GPIO_RSTN, 1);
+#endif
 		sprd_gpio_direction_output(NULL, CONFIG_LCM_GPIO_RSTN, 1);
 		mdelay(60);
 	} else {
@@ -262,10 +266,12 @@ static int ft8006s_boe_mipi_hd_set_brightness(int level)
 	temp &= ~0x07;
 	temp |= level & 0x07;
 
+#ifdef CONFIG_LCM_GPIO_BL_EN
 	sprd_gpio_request(NULL, CONFIG_LCM_GPIO_BL_EN);
 	sprd_gpio_direction_output(NULL, CONFIG_LCM_GPIO_BL_EN, 1);
 	mdelay(40);
-
+#endif
+	
 	i2c_set_bus_num(3);
 	i2c_init(I2C_SPEED, BL_POWER_I2C_ADDRESS);
 
