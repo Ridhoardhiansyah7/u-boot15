@@ -118,6 +118,7 @@ jobs:
           export EXTRA_CFLAGS="-std=gnu99 -w -I$(pwd)/include"
 
           # Build path,target, dtb & toolchain
+          export BSP_ROOT_DIR=$(pwd)
           export BSP_UBOOT_OUT=$(pwd)/out
           export BSP_UBOOT_DIST=$(pwd)/out
           export BSP_UBOOT_DEFCONFIG=${{ github.event.inputs.board_name }}
