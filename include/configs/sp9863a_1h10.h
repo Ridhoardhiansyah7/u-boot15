@@ -14,6 +14,10 @@
 
 #define CONFIG_MEM_LAYOUT_DECOUPLING
 
+#ifndef CONFIG_DISABLE_VAB
+#define CONFIG_ANDROID_AB
+#endif
+
 /*sharklj1 fpga/zebu debug*/
 #define BOOTIMG_ADR	0x8D000000
 
