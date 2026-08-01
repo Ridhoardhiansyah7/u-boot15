@@ -260,17 +260,70 @@ boot_mode_enum_type  get_mode_from_gpio_extend(void)
 	}
 }
 
+#if defined CONFIG_ANDROID_AB
+int do_selcet_ab(void)
+{
+	int ret;
+	char slot[3];
+
+#if defined (CONFIG_FPGA) && defined (CONFIG_DDR_BOOT)
+	ret = 0;
+#else
+	ret = ab_select_slot();
+#endif
+	if (ret < 0) {
+		errorf("Android boot failed, error %d.\n", ret);
+		return -1;
+	}
+
+	/* Android standard slot names are 'a', 'b', ... */
+	slot[0] = '_';
+	slot[1] = BOOT_SLOT_NAME(ret);
+	slot[2] = '\0';
+	if (setenv("slot", slot)) {
+		errorf("set env fail!\n");
+		return -2;
+	}
+
+	printf("ANDROID: Booting slot%s\n", slot);
+
+	return 0;
+}
+#endif
+
+extern bool get_diag_flag();
+extern int s_is6000F;
+
+/*#ifdef CONFIG_SECBOOT
+extern bool get_hmd_configs();
+extern int get_lcs(uint32_t *p_lcs);
+int s_efused = 0;
+#endif */
+
 int do_cboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 {
 	volatile int i;
 	boot_mode_enum_type bootmode = CMD_UNDEFINED_MODE;
 	CBOOT_MODE_ENTRY boot_mode_array[CMD_MAX_MODE] ={0};
+	chipram_env_t* cr_env;
 
 	if(argc > 2)
 		return CMD_RET_USAGE;
 #ifdef CONFIG_AUTOLOAD_MODE
 	autoload_mode();
 #endif
+
+#ifdef CONFIG_ANDROID_AB
+	cr_env = get_chipram_env();
+	if (0x55AA55AA == cr_env->spl_adjust_flag) {
+	    /* spl rollback */
+	    if(ab_slot_rollback_spl(true) == -1) {
+	        return 0;
+	    }
+	}
+	do_selcet_ab();
+#endif
+	
 #if defined CONFIG_AUTOBOOT
 	if (reboot_mode_check() == CMD_AUTODLOADER_REBOOT)
 	{
@@ -283,7 +336,7 @@ int do_cboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 		normal_mode();
 	}
 #endif
-
+	
 #if defined CONFIG_ZEBU || defined CONFIG_FPGA
 	normal_mode();
 #endif
